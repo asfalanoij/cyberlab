@@ -1,0 +1,325 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Design Tokens ───────────────────────────────────────────── */
+:root {
+  --bg:             #0F0F0F;
+  --surface:        #1A1A1A;
+  --surface-raised: #202020;
+  --border:         #282828;
+  --border-faint:   #1F1F1F;
+
+  --text-primary:   #EDEAE4;
+  --text-secondary: #7A7570;
+  --text-muted:     #4A4540;
+
+  --accent:         #5B8EF0;
+  --accent-dim:     #1E2D4A;
+  --accent-hover:   #6B9EFF;
+
+  /* Tactic colors */
+  --t-recon:      #6C9BCF;
+  --t-initial:    #CF6C6C;
+  --t-execution:  #CF9B6C;
+  --t-persist:    #9B6CCF;
+  --t-evasion:    #6CCF9B;
+  --t-cred:       #CFB86C;
+  --t-discovery:  #6CBFCF;
+  --t-lateral:    #CF6CA0;
+  --t-collection: #A0CF6C;
+  --t-c2:         #CF8A6C;
+  --t-exfil:      #8ACF6C;
+  --t-impact:     #CF6C6C;
+  --t-defense:    #6C9BCF;
+
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body:    'IBM Plex Sans', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  --sidebar-w: 240px;
+  --topbar-h:  48px;
+}
+
+/* ─── Base Reset ─────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 6px; height: 6px; }
+::-webkit-scrollbar-track  { background: var(--bg); }
+::-webkit-scrollbar-thumb  { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3A3A3A; }
+
+/* ─── Typography ─────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+h1 { font-size: 28px; }
+h2 { font-size: 20px; }
+h3 { font-size: 16px; font-weight: 500; }
+h4 { font-size: 13px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-secondary); }
+
+p {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--text-primary);
+}
+
+code, pre, .mono {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+/* ─── Layout Shell ───────────────────────────────────────────── */
+.layout-shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  grid-template-rows: var(--topbar-h) 1fr;
+  grid-template-areas:
+    'topbar topbar'
+    'sidebar main';
+  height: 100vh;
+  overflow: hidden;
+}
+
+.topbar  { grid-area: topbar;  }
+.sidebar { grid-area: sidebar; overflow-y: auto; }
+.main    { grid-area: main;    overflow-y: auto; }
+
+/* ─── Notebook Cells ────────────────────────────────────────── */
+.cell-code {
+  background: #141414;
+  border: 1px solid var(--border);
+  border-radius: 0;        /* hard edges — terminal feel */
+  position: relative;
+  overflow: hidden;
+}
+
+.cell-code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border-faint);
+  background: #111111;
+}
+
+.cell-code-lang {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cell-output {
+  border-left: 2px solid var(--accent);
+  margin-left: 16px;
+  padding: 8px 12px;
+  background: #0C0C0C;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+}
+
+/* Output tinted by tactic when in a notebook */
+[data-tactic='recon']      .cell-output { border-color: var(--t-recon); }
+[data-tactic='cred']       .cell-output { border-color: var(--t-cred); }
+[data-tactic='exfil']      .cell-output { border-color: var(--t-exfil); }
+[data-tactic='defense']    .cell-output { border-color: var(--t-defense); }
+
+/* ─── Markdown Cells ─────────────────────────────────────────── */
+.cell-markdown {
+  max-width: 720px;
+  padding: 20px 0;
+}
+
+.cell-markdown h1 { font-size: 26px; margin-bottom: 8px; }
+.cell-markdown h2 { font-size: 18px; margin: 28px 0 8px; color: var(--text-primary); }
+.cell-markdown h3 { font-size: 14px; margin: 20px 0 6px; }
+
+.cell-markdown p  { margin-bottom: 12px; }
+
+.cell-markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 13px;
+}
+
+.cell-markdown th {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  padding: 6px 12px 6px 0;
+  text-align: left;
+}
+
+.cell-markdown td {
+  padding: 7px 12px 7px 0;
+  border-bottom: 1px solid var(--border-faint);
+  color: var(--text-primary);
+  vertical-align: top;
+}
+
+.cell-markdown blockquote {
+  border-left: 2px solid var(--text-muted);
+  padding-left: 16px;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin: 16px 0;
+}
+
+.cell-markdown code {
+  background: var(--surface);
+  border: 1px solid var(--border-faint);
+  padding: 1px 5px;
+  border-radius: 2px;
+  font-size: 12px;
+  color: #C8B5F5;
+}
+
+.cell-markdown pre {
+  background: #141414;
+  border: 1px solid var(--border);
+  padding: 14px 16px;
+  margin: 14px 0;
+  overflow-x: auto;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.cell-markdown pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text-primary);
+}
+
+.cell-markdown ul, .cell-markdown ol {
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+
+.cell-markdown li { margin-bottom: 4px; }
+
+/* ─── Tactic Tag ─────────────────────────────────────────────── */
+.tactic-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 2px;
+}
+
+/* ─── Sidebar Items ──────────────────────────────────────────── */
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 0;
+  transition: background 0.1s, color 0.1s;
+}
+
+.sidebar-item:hover {
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.sidebar-item.active {
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.sidebar-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sidebar-dot.completed { /* filled */ }
+.sidebar-dot.pending   { background: transparent; border: 1px solid currentColor; }
+
+/* ─── Progress Bar ───────────────────────────────────────────── */
+.progress-bar {
+  height: 2px;
+  background: var(--border);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 1px;
+  transition: width 0.4s ease;
+}
+
+/* ─── Article Pipeline ───────────────────────────────────────── */
+.pipeline-card {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 12px 14px;
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.pipeline-card:hover {
+  border-color: #3A3A3A;
+}
+
+/* ─── Selection ──────────────────────────────────────────────── */
+::selection {
+  background: var(--accent-dim);
+  color: var(--text-primary);
+}
