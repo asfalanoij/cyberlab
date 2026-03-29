@@ -2,13 +2,18 @@
 
 import Link from 'next/link'
 import { NOTEBOOK_REGISTRY } from '@/lib/nbformat'
-
-// In production this would come from a zustand store or server component
-const COMPLETED_COUNT = 4  // placeholder
+import { useRequireAuth } from '@/lib/hooks/useAuth'
+import { useProgress } from '@/lib/hooks/useProgress'
+import { signOut } from '@/lib/services/auth'
+import { useRouter } from 'next/navigation'
 
 export function TopBar() {
+  const router = useRouter()
+  const { user, isAuthenticated } = useRequireAuth()
+  const { data: progress } = useProgress()
   const total = NOTEBOOK_REGISTRY.length
-  const pct   = Math.round((COMPLETED_COUNT / total) * 100)
+  const completedCount = progress?.filter(p => p.status === 'completed').length ?? 0
+  const pct = Math.round((completedCount / total) * 100)
 
   return (
     <header
@@ -51,7 +56,7 @@ export function TopBar() {
             letterSpacing: '0.04em',
           }}
         >
-          {COMPLETED_COUNT}/{total} modules
+          {completedCount}/{total} modules
         </span>
 
         <div
@@ -76,8 +81,8 @@ export function TopBar() {
         </span>
       </div>
 
-      {/* Nav links */}
-      <nav style={{ display: 'flex', gap: 4 }}>
+      {/* Nav links + Auth */}
+      <nav style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
         {[
           { href: '/',         label: 'Dashboard' },
           { href: '/notebooks', label: 'Notebooks' },
@@ -102,6 +107,31 @@ export function TopBar() {
             {label}
           </Link>
         ))}
+
+        <span style={{ width: 1, height: 16, background: 'var(--border)', margin: '0 6px' }} />
+
+        {isAuthenticated ? (
+          <button
+            onClick={() => { signOut(); router.push('/login') }}
+            style={{
+              background: 'none', border: 'none', color: 'var(--text-secondary)',
+              fontFamily: 'var(--font-mono)', fontSize: 11, cursor: 'pointer',
+              padding: '4px 8px',
+            }}
+          >
+            {user?.name ?? user?.email} · sign out
+          </button>
+        ) : (
+          <Link
+            href="/login"
+            style={{
+              fontFamily: 'var(--font-mono)', fontSize: 11,
+              color: 'var(--accent)', padding: '4px 8px', textDecoration: 'none',
+            }}
+          >
+            sign in
+          </Link>
+        )}
       </nav>
     </header>
   )
