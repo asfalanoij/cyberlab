@@ -1,10 +1,17 @@
 {
   "name": "cyberlab",
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/api",
+    "packages/*",
+    "cyberlab"
+  ],
   "scripts": {
-    "dev": "npm run dev --workspace=apps/api & npm run dev --workspace=apps/web",
+    "dev": "npm run dev:api & npm run dev:web",
     "dev:api": "npm run dev --workspace=apps/api",
-    "dev:web": "npm run dev --workspace=apps/web"
+    "dev:web": "cd cyberlab && npm run dev"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.1"
   }
 }
